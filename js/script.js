@@ -24,6 +24,14 @@ let jellyfish = {
     x: randomPositionX(),
     y: randomPositionY(),
 }
+let jellyfishTwo = {
+    x: randomPositionX(),
+    y: randomPositionY(),
+}
+let jellyfishThree = {
+    x: randomPositionX(),
+    y: randomPositionY(),
+}
 let snake = [];
 snake[0] = {
     x: 8 * box,
@@ -73,6 +81,8 @@ function drawGame() {
     stx.drawImage(ground, 0, 0);
     stx.drawImage(foodImg, food.x, food.y);
     stx.drawImage(jellyfishImg, jellyfish.x, jellyfish.y);
+    stx.drawImage(jellyfishImg, jellyfishTwo.x, jellyfishTwo.y);
+    stx.drawImage(jellyfishImg, jellyfishThree.x, jellyfishThree.y);
     for (let i = 0; i < snake.length; i++) {
         stx.drawImage(snakeImg, snake[i].x, snake[i].y);
     }
@@ -81,15 +91,31 @@ function drawGame() {
     stx.fillText(score, box * 14, box * 0.7);
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
-    if (snakeX == food.x && snakeY == food.y) {
+    if (snakeX == food.x && snakeY == food.y
+        || snakeX == (food.x + box / 2) && snakeY == (food.y + box / 2)
+        || snakeX == (food.x - box / 2) && snakeY == (food.y - box / 2)) {
         score++;
         food = {
             x: randomPositionX(),
             y: randomPositionY(),
-
         }
-    } else {
-        if (snakeX == jellyfish.x && snakeY == jellyfish.y) {
+        jellyfish = {
+            x: randomPositionX(),
+            y: randomPositionY(),
+        }
+        jellyfishTwo = {
+            x: randomPositionX(),
+            y: randomPositionY(),
+        }
+        jellyfishThree = {
+            x: randomPositionX(),
+            y: randomPositionY(),
+        }
+
+    } else
+        if (snakeX == jellyfish.x && snakeY == jellyfish.y
+            || snakeX == (jellyfish.x + box / 2) && snakeY == (jellyfish.y + box / 2)
+            || snakeX == (jellyfish.x - box / 2) && snakeY == (jellyfish.y - box / 2)) {
             score--;
             jellyfish = {
                 x: randomPositionX(),
@@ -97,18 +123,39 @@ function drawGame() {
             }
             snake.pop();
             snake.pop();
-        }
-        else { snake.pop(); }
-    }
+        } else
+            if (snakeX == jellyfishTwo.x && snakeY == jellyfishTwo.y
+                || snakeX == (jellyfishTwo.x + box / 2) && snakeY == (jellyfishTwo.y + box / 2)
+                || snakeX == (jellyfishTwo.x - box / 2) && snakeY == (jellyfishTwo.y - box / 2)) {
+                score--;
+                jellyfishTwo = {
+                    x: randomPositionX(),
+                    y: randomPositionY(),
+                }
+                snake.pop();
+                snake.pop();
+            } else
+                if (snakeX == jellyfishThree.x && snakeY == jellyfishThree.y
+                    || snakeX == (jellyfishThree.x + box / 2) && snakeY == (jellyfishThree.y + box / 2)
+                    || snakeX == (jellyfishThree.x - box / 2) && snakeY == (jellyfishThree.y - box / 2)) {
+                    score--;
+                    jellyfishThree = {
+                        x: randomPositionX(),
+                        y: randomPositionY(),
+                    }
+                    snake.pop();
+                    snake.pop();
+                }
+                else { snake.pop(); }
     if (snakeX < 0 || snakeX > box * 14
         || snakeY < box || snakeY > box * 15) {
         clearInterval(game);
         GameOver();
     }
-    if (dir == 'left') snakeX -= box;
-    if (dir == 'right') snakeX += box;
-    if (dir == 'up') snakeY -= box;
-    if (dir == 'down') snakeY += box;
+    if (dir == 'left') snakeX -= box / 2;
+    if (dir == 'right') snakeX += box / 2;
+    if (dir == 'up') snakeY -= box / 2;
+    if (dir == 'down') snakeY += box / 2;
     let snakeHead = {
         x: snakeX,
         y: snakeY,
@@ -124,4 +171,4 @@ function drawGame() {
         GameOver();
     }
 }
-let game = setInterval(drawGame, 350);
+let game = setInterval(drawGame, 150);
