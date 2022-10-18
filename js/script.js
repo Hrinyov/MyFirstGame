@@ -17,29 +17,27 @@ let box = 48;
 let score = 0;
 
 let food = {
-    x: Math.floor((Math.random() * 15) + 0) * box,
-    y: Math.floor((Math.random() * 15) + 1) * box,
-}
-let jellyfish = {
     x: randomPositionX(),
     y: randomPositionY(),
 }
-let jellyfishTwo = {
-    x: randomPositionX(),
-    y: randomPositionY(),
+let jellyfish = [];
+function makeJellyfish() {
+    for (let i = 0; i < 4; i++) {
+        jellyfish[i] = {
+            x: randomPositionX(),
+            y: randomPositionY(),
+        }
+    }
 }
-let jellyfishThree = {
-    x: randomPositionX(),
-    y: randomPositionY(),
-}
+makeJellyfish();
 let snake = [];
 snake[0] = {
     x: 8 * box,
     y: (9 * box),
-
 }
 let gameOver = 'GAME OVER';
 let win = 'WIN!';
+let restart = 'Restart - press ENTER';
 let dir;
 function randomPositionX() {
     return (Math.floor((Math.random() * 15) + 0) * box)
@@ -47,48 +45,73 @@ function randomPositionX() {
 function randomPositionY() {
     return (Math.floor((Math.random() * 15) + 1) * box)
 }
-function GameOver() {
+function GameOverMessage() {
     stx.fillStyle = "Black";
     stx.font = "80px Arial";
     stx.fillText(gameOver, box * 2.5, box * 7);
 }
-function Win() {
+function WinMessage() {
     stx.fillStyle = "Black";
     stx.font = "80px Arial";
     stx.fillText(win, box * 5, box * 7);
 }
+function restartGameMessage() {
+    stx.fillStyle = "White";
+    stx.font = "35px Arial";
+    stx.fillText(restart, box * 4, box * 4);
+}
+function scoreMessage() {
+    stx.fillStyle = "white";
+    stx.font = "42px Arial";
+    stx.fillText(score, box * 14, box * 0.7);
+}
+function end() {
+    clearInterval(game);
+    restartGameMessage();
+}
 document.addEventListener('keydown', direction);
 function direction(event) {
-    if (event.keyCode == 37 && dir != 'right')
-        dir = 'left';
-    else if (event.keyCode == 38 && dir != 'down')
-        dir = 'up';
-    else if (event.keyCode == 39 && dir != 'left')
-        dir = 'right';
-    else if (event.keyCode == 40 && dir != 'up')
-        dir = 'down';
+    switch (event.keyCode) {
+        case 13:
+            window.location.reload();
+        case 37:
+            if (dir != 'right') {
+                return dir = 'left';
+            }
+        case 38:
+            if (dir != 'down') {
+                return dir = 'up';
+            }
+        case 39:
+            if (dir != 'left') {
+                return dir = 'right';
+            }
+        case 40:
+            if (dir != 'up') {
+                return dir = 'down';
+            }
+        default:
+            return dir;
+    }
 }
 function eatTail(head, arr) {
     for (let i = 0; i < arr.length; i++) {
         if (head.x == arr[i].x && head.y == arr[i].y) {
-            clearInterval(game);
-            GameOver();
+            end();
+            GameOverMessage();
         }
-
     }
 }
 function drawGame() {
     stx.drawImage(ground, 0, 0);
     stx.drawImage(foodImg, food.x, food.y);
-    stx.drawImage(jellyfishImg, jellyfish.x, jellyfish.y);
-    stx.drawImage(jellyfishImg, jellyfishTwo.x, jellyfishTwo.y);
-    stx.drawImage(jellyfishImg, jellyfishThree.x, jellyfishThree.y);
+    for (let i = 0; i < jellyfish.length; i++) {
+        stx.drawImage(jellyfishImg, jellyfish[i].x, jellyfish[i].y);
+    }
     for (let i = 0; i < snake.length; i++) {
         stx.drawImage(snakeImg, snake[i].x, snake[i].y);
     }
-    stx.fillStyle = "white";
-    stx.font = "42px Arial";
-    stx.fillText(score, box * 14, box * 0.7);
+    scoreMessage();
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
     if (snakeX == food.x && snakeY == food.y
@@ -99,58 +122,24 @@ function drawGame() {
             x: randomPositionX(),
             y: randomPositionY(),
         }
-        jellyfish = {
-            x: randomPositionX(),
-            y: randomPositionY(),
-        }
-        jellyfishTwo = {
-            x: randomPositionX(),
-            y: randomPositionY(),
-        }
-        jellyfishThree = {
-            x: randomPositionX(),
-            y: randomPositionY(),
-        }
-
-    } else
-        if (snakeX == jellyfish.x && snakeY == jellyfish.y
-            || snakeX == (jellyfish.x + box / 2) && snakeY == (jellyfish.y + box / 2)
-            || snakeX == (jellyfish.x - box / 2) && snakeY == (jellyfish.y - box / 2)) {
+        makeJellyfish();
+    } else { snake.pop(); }
+    for (let i = 0; i < jellyfish.length; i++) {
+        if (snakeX == jellyfish[i].x && snakeY == jellyfish[i].y
+            || snakeX == (jellyfish[i].x + box / 2) && snakeY == (jellyfish[i].y + box / 2)
+            || snakeX == (jellyfish[i].x - box / 2) && snakeY == (jellyfish[i].y - box / 2)) {
             score--;
-            jellyfish = {
+            jellyfish[i] = {
                 x: randomPositionX(),
                 y: randomPositionY(),
             }
             snake.pop();
-            snake.pop();
-        } else
-            if (snakeX == jellyfishTwo.x && snakeY == jellyfishTwo.y
-                || snakeX == (jellyfishTwo.x + box / 2) && snakeY == (jellyfishTwo.y + box / 2)
-                || snakeX == (jellyfishTwo.x - box / 2) && snakeY == (jellyfishTwo.y - box / 2)) {
-                score--;
-                jellyfishTwo = {
-                    x: randomPositionX(),
-                    y: randomPositionY(),
-                }
-                snake.pop();
-                snake.pop();
-            } else
-                if (snakeX == jellyfishThree.x && snakeY == jellyfishThree.y
-                    || snakeX == (jellyfishThree.x + box / 2) && snakeY == (jellyfishThree.y + box / 2)
-                    || snakeX == (jellyfishThree.x - box / 2) && snakeY == (jellyfishThree.y - box / 2)) {
-                    score--;
-                    jellyfishThree = {
-                        x: randomPositionX(),
-                        y: randomPositionY(),
-                    }
-                    snake.pop();
-                    snake.pop();
-                }
-                else { snake.pop(); }
+        }
+    }
     if (snakeX < 0 || snakeX > box * 14
         || snakeY < box || snakeY > box * 15) {
-        clearInterval(game);
-        GameOver();
+        end();
+        GameOverMessage();
     }
     if (dir == 'left') snakeX -= box / 2;
     if (dir == 'right') snakeX += box / 2;
@@ -163,12 +152,12 @@ function drawGame() {
     eatTail(snakeHead, snake);
     snake.unshift(snakeHead);
     if (score > 19) {
-        clearInterval(game);
-        Win();
+        end();
+        WinMessage();
     }
     if (score < 0) {
-        clearInterval(game);
-        GameOver();
+        end();
+        GameOverMessage();
     }
 }
 let game = setInterval(drawGame, 150);
